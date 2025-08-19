@@ -16,53 +16,71 @@ from pdf_processor import (
 
 
 async def process_pdf_batch(pdf_files, batch_num, excel_output):
-    """Process a batch of PDF files concurrently"""
+    """Process a batch of PDF files with TRUE concurrency"""
     print(f"\n🔄 Processing Batch {batch_num} ({len(pdf_files)} files)")
     print("=" * 60)
+    print(f"   🚀 Starting {len(pdf_files)} concurrent processes...")
 
-    # Create tasks for concurrent processing
-    tasks = []
-    for pdf_file in pdf_files:
-        task = process_single_pdf_async(pdf_file, excel_output)
-        tasks.append(task)
+    # Step 1: Extract text from all PDFs concurrently
+    print("   📝 Extracting text from all PDFs simultaneously...")
+    text_tasks = [extract_text_from_pdf(pdf_file) for pdf_file in pdf_files]
+    texts = await asyncio.gather(*text_tasks, return_exceptions=True)
 
-    # Execute all tasks concurrently
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    # Step 2: Process valid texts with OpenAI concurrently
+    print("   🤖 Processing with OpenAI simultaneously...")
+    openai_tasks = []
+    valid_indices = []
 
-    # Process results
+    for i, (pdf_file, text) in enumerate(zip(pdf_files, texts)):
+        if isinstance(text, Exception):
+            print(f"      ❌ Text extraction failed for {pdf_file.name}: {text}")
+            continue
+        elif not text.strip():
+            print(f"      ⚠️  No text extracted from {pdf_file.name}")
+            continue
+        else:
+            print(f"      ✅ {pdf_file.name}: {len(text)} chars extracted")
+            openai_tasks.append(extract_paper_info(text, pdf_file.name))
+            valid_indices.append(i)
+
+    # Execute all OpenAI calls simultaneously
+    if openai_tasks:
+        print(f"   🔥 Sending {len(openai_tasks)} concurrent OpenAI requests...")
+        openai_results = await asyncio.gather(*openai_tasks, return_exceptions=True)
+    else:
+        openai_results = []
+
+    # Step 3: Save all results concurrently
+    print("   💾 Saving results to Excel simultaneously...")
+    save_tasks = []
     successful = 0
     failed = 0
 
-    for i, result in enumerate(results):
-        if isinstance(result, Exception):
-            print(f"   ❌ {pdf_files[i].name}: {result}")
+    # Process files that had no text
+    for i, (pdf_file, text) in enumerate(zip(pdf_files, texts)):
+        if i not in valid_indices:
+            record = {
+                "filename": pdf_file.name,
+                "title": pdf_file.name,
+                "abstract": (
+                    "No text extracted"
+                    if not isinstance(text, Exception)
+                    else "Text extraction error"
+                ),
+                "method": "Processing failed",
+                "objectives": "Processing failed",
+                "categories": ["Error"],
+                "summary": "Failed to extract text from PDF",
+            }
+            save_tasks.append(save_to_excel(record, Path(excel_output)))
             failed += 1
-        elif result:
-            print(f"   ✅ {pdf_files[i].name}: Success")
-            successful += 1
-        else:
-            print(f"   ⚠️  {pdf_files[i].name}: Failed")
-            failed += 1
 
-    print(f"\n📊 Batch {batch_num} Results: {successful} successful, {failed} failed")
-    return successful, failed
+    # Process OpenAI results
+    for i, (valid_idx, openai_result) in enumerate(zip(valid_indices, openai_results)):
+        pdf_file = pdf_files[valid_idx]
 
-
-async def process_single_pdf_async(pdf_file, excel_output):
-    """Async wrapper for processing a single PDF"""
-    try:
-        # Extract text
-        text = await extract_text_from_pdf(pdf_file)
-
-        if not text.strip():
-            print(f"   ⚠️  No text extracted from {pdf_file.name}")
-            return False
-
-        # Process with OpenAI
-        info_json = await extract_paper_info(text, pdf_file.name)
-
-        if info_json is None:
-            print(f"   ❌ OpenAI processing failed for {pdf_file.name}")
+        if isinstance(openai_result, Exception):
+            print(f"      ❌ OpenAI failed for {pdf_file.name}: {openai_result}")
             record = {
                 "filename": pdf_file.name,
                 "title": pdf_file.name,
@@ -70,14 +88,29 @@ async def process_single_pdf_async(pdf_file, excel_output):
                 "method": "OpenAI processing failed",
                 "objectives": "OpenAI processing failed",
                 "categories": ["Error"],
-                "summary": "Failed to process with OpenAI",
+                "summary": f"OpenAI error: {str(openai_result)}",
             }
+            failed += 1
+        elif openai_result is None:
+            print(f"      ❌ OpenAI returned None for {pdf_file.name}")
+            record = {
+                "filename": pdf_file.name,
+                "title": pdf_file.name,
+                "abstract": "OpenAI processing failed",
+                "method": "OpenAI processing failed",
+                "objectives": "OpenAI processing failed",
+                "categories": ["Error"],
+                "summary": "OpenAI returned no response",
+            }
+            failed += 1
         else:
             try:
-                record = json.loads(info_json)
+                record = json.loads(openai_result)
                 record["filename"] = pdf_file.name
+                print(f"      ✅ {pdf_file.name}: Successfully processed")
+                successful += 1
             except json.JSONDecodeError as e:
-                print(f"   ❌ JSON parsing error for {pdf_file.name}: {e}")
+                print(f"      ❌ JSON parsing failed for {pdf_file.name}: {e}")
                 record = {
                     "filename": pdf_file.name,
                     "title": pdf_file.name,
@@ -85,17 +118,18 @@ async def process_single_pdf_async(pdf_file, excel_output):
                     "method": "JSON parsing failed",
                     "objectives": "JSON parsing failed",
                     "categories": ["Error"],
-                    "summary": "Failed to parse OpenAI response",
+                    "summary": f"JSON parsing error: {str(e)}",
                 }
+                failed += 1
 
-        # Save to Excel
-        excel_path = Path(excel_output)
-        await save_to_excel(record, excel_path)
-        return True
+        save_tasks.append(save_to_excel(record, Path(excel_output)))
 
-    except Exception as e:
-        print(f"   ❌ Error processing {pdf_file.name}: {e}")
-        return False
+    # Execute all save operations concurrently
+    if save_tasks:
+        await asyncio.gather(*save_tasks, return_exceptions=True)
+
+    print(f"\n📊 Batch {batch_num} Results: {successful} successful, {failed} failed")
+    return successful, failed
 
 
 async def batch_process_papers(
@@ -175,13 +209,6 @@ if __name__ == "__main__":
     BATCH_SIZE = 10  # Process 10 files concurrently
     PAPERS_DIR = "papers"  # Directory containing PDF files
     EXCEL_OUTPUT = "batch_papers_summary.xlsx"  # Output Excel file
-
-    # Start batch processing
-    asyncio.run(
-        batch_process_papers(
-            batch_size=BATCH_SIZE, papers_dir=PAPERS_DIR, excel_output=EXCEL_OUTPUT
-        )
-    )
 
     # Start batch processing
     asyncio.run(
