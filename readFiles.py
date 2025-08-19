@@ -1,7 +1,7 @@
-import model
+import models
 
 # Make a chat completion request using gpt-4o-mini
-response = model.client.chat.completions.create(
+response = models.client.chat.completions.create(
     model="openai/gpt-4o-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},

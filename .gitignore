@@ -2,3 +2,5 @@
 /venv
 /backup
 .env
+pycache/
+__pycache__/
