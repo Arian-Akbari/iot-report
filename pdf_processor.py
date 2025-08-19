@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from datetime import datetime
@@ -10,7 +11,7 @@ import pandas as pd
 import models
 
 
-def extract_text_from_pdf(pdf_path):
+async def extract_text_from_pdf(pdf_path):
     """Extract text from PDF using PyMuPDF"""
     try:
         doc = fitz.open(pdf_path)
@@ -26,7 +27,7 @@ def extract_text_from_pdf(pdf_path):
         return ""
 
 
-def extract_paper_info(text, filename):
+async def extract_paper_info(text, filename):
     """Extract structured information using OpenAI's JSON Schema validation"""
 
     # Define your JSON schema
@@ -89,7 +90,7 @@ def extract_paper_info(text, filename):
         return None
 
 
-def save_to_excel(record, excel_path):
+async def save_to_excel(record, excel_path):
     """Save record to Excel file incrementally"""
     try:
         # Add timestamp and filename
@@ -108,8 +109,70 @@ def save_to_excel(record, excel_path):
         print(f"Error saving to Excel: {e}")
 
 
-def process_papers(test_mode=True):
-    """Main processing function"""
+async def process_single_pdf(pdf_path, excel_output="papers_summary.xlsx"):
+    """Process a single PDF file and save results to Excel"""
+    pdf_file = Path(pdf_path)
+
+    if not pdf_file.exists():
+        print(f"❌ PDF file '{pdf_path}' not found!")
+        return False
+
+    if not pdf_file.suffix.lower() == ".pdf":
+        print(f"❌ File '{pdf_path}' is not a PDF!")
+        return False
+
+    print(f"📄 Processing: {pdf_file.name}")
+
+    # Extract text
+    print("   📝 Extracting text...")
+    text = await extract_text_from_pdf(pdf_file)
+
+    if not text.strip():
+        print("   ⚠️  No text extracted, skipping...")
+        return False
+
+    print(f"   📊 Extracted {len(text)} characters")
+
+    # Process with OpenAI
+    print("   🤖 Processing with OpenAI...")
+    info_json = await extract_paper_info(text, pdf_file.name)
+
+    if info_json is None:
+        print("   ❌ Failed to extract information from OpenAI")
+        record = {
+            "filename": pdf_file.name,
+            "title": pdf_file.name,
+            "abstract": "OpenAI processing failed",
+            "method": "OpenAI processing failed",
+            "objectives": "OpenAI processing failed",
+            "categories": ["Error"],
+            "summary": "Failed to process with OpenAI",
+        }
+    else:
+        try:
+            record = json.loads(info_json)
+            record["filename"] = pdf_file.name
+        except json.JSONDecodeError as e:
+            print(f"   ❌ JSON parsing error: {e}")
+            record = {
+                "filename": pdf_file.name,
+                "title": pdf_file.name,
+                "abstract": "JSON parsing failed",
+                "method": "JSON parsing failed",
+                "objectives": "JSON parsing failed",
+                "categories": ["Error"],
+                "summary": "Failed to parse OpenAI response",
+            }
+
+    # Save to Excel
+    excel_path = Path(excel_output)
+    await save_to_excel(record, excel_path)
+    print(f"✅ Results saved to {excel_output}")
+    return True
+
+
+async def process_papers(test_mode=True):
+    """Main processing function for multiple papers"""
     papers_dir = Path("papers")
     excel_output = Path("papers_summary.xlsx")
 
@@ -134,7 +197,7 @@ def process_papers(test_mode=True):
 
         # Extract text
         print("   📝 Extracting text...")
-        text = extract_text_from_pdf(pdf_file)
+        text = await extract_text_from_pdf(pdf_file)
 
         if not text.strip():
             print("   ⚠️  No text extracted, skipping...")
@@ -144,7 +207,7 @@ def process_papers(test_mode=True):
 
         # Process with OpenAI
         print("   🤖 Processing with OpenAI...")
-        info_json = extract_paper_info(text, pdf_file.name)
+        info_json = await extract_paper_info(text, pdf_file.name)
 
         if info_json is None:
             print("   ❌ Failed to extract information from OpenAI")
@@ -193,21 +256,22 @@ def process_papers(test_mode=True):
 
         # Save to Excel
         if not test_mode:
-            save_to_excel(record, excel_output)
+            await save_to_excel(record, excel_output)
 
     if not test_mode:
         print(f"\n🎉 Processing complete! Results saved to '{excel_output}'")
 
 
 if __name__ == "__main__":
-    # Set this flag for testing
-    TEST_FIRST_FILE = True
-
-    print("🚀 PDF Paper Processor")
+    print("🚀 Async PDF Paper Processor")
     print("=" * 50)
 
-    if TEST_FIRST_FILE:
-        process_papers(test_mode=True)
-    else:
-        print("🔄 Running full processing on all files...")
-        process_papers(test_mode=False)
+    # Example usage:
+    # 1. Process a single PDF file:
+    # asyncio.run(process_single_pdf("path/to/your/paper.pdf", "output.xlsx"))
+
+    # 2. Process multiple papers from papers directory:
+    # asyncio.run(process_papers(test_mode=False))
+
+    # 3. Test mode (first file only):
+    asyncio.run(process_papers(test_mode=True))
