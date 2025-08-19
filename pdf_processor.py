@@ -42,7 +42,10 @@ def extract_paper_info(text, filename):
                 "items": {"type": "string"},
                 "description": "Keywords from abstract",
             },
-            "summary": {"type": "string", "description": "Complete paper summary"},
+            "summary": {
+                "type": "string",
+                "description": "Comprehensive and detailed summary covering: the problem addressed, main contributions, methodology used, key findings/results, practical applications, significance to the field, and future implications. Include specific details about algorithms, techniques, datasets, performance metrics, and comparative analysis when mentioned. Make it rich in context and technical depth (aim for 300-500 words).",
+            },
         },
         "required": [
             "title",
@@ -77,8 +80,6 @@ def extract_paper_info(text, filename):
                     "strict": True,  # This enforces strict validation
                 },
             },
-            max_tokens=2000,
-            temperature=0.3,
         )
 
         return response.choices[0].message.content
@@ -168,7 +169,7 @@ def process_papers(test_mode=True):
                     print(f"Method: {record.get('method', 'N/A')[:200]}...")
                     print(f"Objectives: {record.get('objectives', 'N/A')[:200]}...")
                     print(f"Categories: {record.get('categories', 'N/A')}")
-                    print(f"Summary: {record.get('summary', 'N/A')[:300]}...")
+                    print(f"Summary: {record.get('summary', 'N/A')}")
 
                     user_input = input("\n✅ Does this look good? (y/n): ")
                     if user_input.lower() != "y":
