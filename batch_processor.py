@@ -109,7 +109,7 @@ async def batch_process_papers(
 
 if __name__ == "__main__":
     # Configuration
-    BATCH_SIZE = 5
+    BATCH_SIZE = 10
     PAPERS_DIR = "papers"
     EXCEL_OUTPUT = "batch_papers_summary.xlsx"
 
