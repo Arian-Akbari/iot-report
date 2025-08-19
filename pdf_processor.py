@@ -1,13 +1,11 @@
 import asyncio
 import json
-import os
 from datetime import datetime
 from pathlib import Path
 
 import fitz  # PyMuPDF
 import pandas as pd
 
-# Import your models module
 import models
 
 
@@ -18,19 +16,17 @@ async def extract_text_from_pdf(pdf_path):
         full_text = []
         for page in doc:
             text = page.get_text()
-            if text.strip():  # Only add non-empty pages
+            if text.strip():
                 full_text.append(text)
         doc.close()
         return "\n".join(full_text)
     except Exception as e:
-        print(f"Error extracting text from {pdf_path}: {e}")
-        return ""
+        raise Exception(f"Error extracting text from {pdf_path}: {e}")
 
 
-async def extract_paper_info(text, filename):
-    """Extract structured information using OpenAI's JSON Schema validation"""
+async def extract_paper_info(text, filename, max_retries=3):
+    """Extract structured information with retry logic"""
 
-    # Define your JSON schema
     json_schema = {
         "type": "object",
         "properties": {
@@ -45,7 +41,7 @@ async def extract_paper_info(text, filename):
             },
             "summary": {
                 "type": "string",
-                "description": "Comprehensive and detailed summary covering: the problem addressed, main contributions, methodology used, key findings/results, practical applications, significance to the field, and future implications. Include specific details about algorithms, techniques, datasets, performance metrics, and comparative analysis when mentioned. Make it rich in context and technical depth (aim for 300-500 words).",
+                "description": "Comprehensive summary covering: problem addressed, main contributions, methodology, key findings, practical applications, significance, and future implications. Include technical details, algorithms, datasets, performance metrics (300-500 words).",
             },
         },
         "required": [
@@ -59,41 +55,47 @@ async def extract_paper_info(text, filename):
         "additionalProperties": False,
     }
 
-    try:
-        response = models.client.chat.completions.create(
-            model="openai/gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a scientific paper analysis assistant.",
+    for attempt in range(max_retries):
+        try:
+            response = models.client.chat.completions.create(
+                model="openai/gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a scientific paper analysis assistant. If information is not available, use empty string for text fields and empty array for categories.",
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Extract paper information from: {text[:15000]}",
+                    },
+                ],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "paper_analysis",
+                        "description": "Structured paper information extraction",
+                        "schema": json_schema,
+                        "strict": True,
+                    },
                 },
-                {
-                    "role": "user",
-                    "content": f"Extract paper information from: {text[:15000]}",
-                },
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "paper_analysis",
-                    "description": "Structured paper information extraction",
-                    "schema": json_schema,
-                    "strict": True,  # This enforces strict validation
-                },
-            },
-        )
+                max_tokens=3000,
+                temperature=0.1,
+            )
 
-        return response.choices[0].message.content
+            return response.choices[0].message.content
 
-    except Exception as e:
-        print(f"Error processing {filename}: {e}")
-        return None
+        except Exception as e:
+            print(f"   ❌ Attempt {attempt + 1} failed for {filename}: {e}")
+            if attempt == max_retries - 1:
+                raise Exception(
+                    f"All {max_retries} attempts failed for {filename}: {e}"
+                )
+            await asyncio.sleep(2**attempt)  # Exponential backoff: 1s, 2s, 4s
 
 
 async def save_to_excel(record, excel_path):
-    """Save record to Excel file incrementally"""
+    """Save record to Excel file"""
     try:
-        # Add timestamp and filename
         record["processed_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         if excel_path.exists():
@@ -103,175 +105,37 @@ async def save_to_excel(record, excel_path):
             df = pd.DataFrame([record])
 
         df.to_excel(excel_path, index=False)
-        print(f"✅ Saved record to {excel_path}")
 
     except Exception as e:
-        print(f"Error saving to Excel: {e}")
+        raise Exception(f"Error saving to Excel: {e}")
 
 
-async def process_single_pdf(pdf_path, excel_output="papers_summary.xlsx"):
-    """Process a single PDF file and save results to Excel"""
-    pdf_file = Path(pdf_path)
-
-    if not pdf_file.exists():
-        print(f"❌ PDF file '{pdf_path}' not found!")
-        return False
-
-    if not pdf_file.suffix.lower() == ".pdf":
-        print(f"❌ File '{pdf_path}' is not a PDF!")
-        return False
-
-    print(f"📄 Processing: {pdf_file.name}")
-
-    # Extract text
-    print("   📝 Extracting text...")
-    text = await extract_text_from_pdf(pdf_file)
-
-    if not text.strip():
-        print("   ⚠️  No text extracted, skipping...")
-        return False
-
-    print(f"   📊 Extracted {len(text)} characters")
-
-    # Process with OpenAI
-    print("   🤖 Processing with OpenAI...")
-    info_json = await extract_paper_info(text, pdf_file.name)
-
-    if info_json is None:
-        print("   ❌ Failed to extract information from OpenAI")
-        record = {
-            "filename": pdf_file.name,
-            "title": pdf_file.name,
-            "abstract": "OpenAI processing failed",
-            "method": "OpenAI processing failed",
-            "objectives": "OpenAI processing failed",
-            "categories": ["Error"],
-            "summary": "Failed to process with OpenAI",
-        }
-    else:
-        try:
-            record = json.loads(info_json)
-            record["filename"] = pdf_file.name
-        except json.JSONDecodeError as e:
-            print(f"   ❌ JSON parsing error: {e}")
-            record = {
-                "filename": pdf_file.name,
-                "title": pdf_file.name,
-                "abstract": "JSON parsing failed",
-                "method": "JSON parsing failed",
-                "objectives": "JSON parsing failed",
-                "categories": ["Error"],
-                "summary": "Failed to parse OpenAI response",
-            }
-
-    # Save to Excel
-    excel_path = Path(excel_output)
-    await save_to_excel(record, excel_path)
-    print(f"✅ Results saved to {excel_output}")
-    return True
-
-
-async def process_papers(test_mode=True):
-    """Main processing function for multiple papers"""
-    papers_dir = Path("papers")
-    excel_output = Path("papers_summary.xlsx")
-
-    if not papers_dir.exists():
-        print(f"❌ Papers directory '{papers_dir}' not found!")
-        return
-
-    pdf_files = list(papers_dir.glob("*.pdf"))
-
-    if not pdf_files:
-        print(f"❌ No PDF files found in '{papers_dir}'")
-        return
-
-    print(f"📁 Found {len(pdf_files)} PDF files")
-
-    if test_mode:
-        print("🧪 TEST MODE: Processing first file only")
-        pdf_files = pdf_files[:1]
-
-    for idx, pdf_file in enumerate(pdf_files, 1):
-        print(f"\n📄 Processing {idx}/{len(pdf_files)}: {pdf_file.name}")
-
+async def process_single_pdf(pdf_path):
+    """Process a single PDF and return the record with clean error handling"""
+    try:
         # Extract text
-        print("   📝 Extracting text...")
-        text = await extract_text_from_pdf(pdf_file)
-
+        text = await extract_text_from_pdf(pdf_path)
         if not text.strip():
-            print("   ⚠️  No text extracted, skipping...")
-            continue
+            raise Exception("No text extracted")
 
-        print(f"   📊 Extracted {len(text)} characters")
+        # Process with OpenAI (with retry)
+        info_json = await extract_paper_info(text, pdf_path.name)
 
-        # Process with OpenAI
-        print("   🤖 Processing with OpenAI...")
-        info_json = await extract_paper_info(text, pdf_file.name)
+        # Parse JSON
+        record = json.loads(info_json)
+        record["filename"] = pdf_path.name
 
-        if info_json is None:
-            print("   ❌ Failed to extract information from OpenAI")
-            record = {
-                "filename": pdf_file.name,
-                "title": pdf_file.name,
-                "abstract": "OpenAI processing failed",
-                "method": "OpenAI processing failed",
-                "objectives": "OpenAI processing failed",
-                "categories": ["Error"],
-                "summary": "Failed to process with OpenAI",
-            }
-        else:
-            try:
-                record = json.loads(info_json)
-                record["filename"] = pdf_file.name
+        return record, None
 
-                if test_mode:
-                    print("\n📋 EXTRACTED INFORMATION:")
-                    print(f"Title: {record.get('title', 'N/A')}")
-                    print(f"Abstract: {record.get('abstract', 'N/A')[:200]}...")
-                    print(f"Method: {record.get('method', 'N/A')[:200]}...")
-                    print(f"Objectives: {record.get('objectives', 'N/A')[:200]}...")
-                    print(f"Categories: {record.get('categories', 'N/A')}")
-                    print(f"Summary: {record.get('summary', 'N/A')}")
-
-                    user_input = input("\n✅ Does this look good? (y/n): ")
-                    if user_input.lower() != "y":
-                        print("❌ Test failed. Please check your setup.")
-                        return
-                    else:
-                        print("✅ Test passed! You can now run the full processing.")
-                        return
-
-            except json.JSONDecodeError as e:
-                print(f"   ❌ JSON parsing error: {e}")
-                record = {
-                    "filename": pdf_file.name,
-                    "title": pdf_file.name,
-                    "abstract": "JSON parsing failed",
-                    "method": "JSON parsing failed",
-                    "objectives": "JSON parsing failed",
-                    "categories": ["Error"],
-                    "summary": "Failed to parse OpenAI response",
-                }
-
-        # Save to Excel
-        if not test_mode:
-            await save_to_excel(record, excel_output)
-
-    if not test_mode:
-        print(f"\n🎉 Processing complete! Results saved to '{excel_output}'")
-
-
-if __name__ == "__main__":
-    print("🚀 Async PDF Paper Processor")
-    print("=" * 50)
-
-    # Example usage:
-    # 1. Process a single PDF file:
-    # asyncio.run(process_single_pdf("path/to/your/paper.pdf", "output.xlsx"))
-
-    # 2. Process multiple papers from papers directory:
-    # asyncio.run(process_papers(test_mode=False))
-
-    # 3. Test mode (first file only):
-    asyncio.run(process_papers(test_mode=True))
+    except Exception as e:
+        # Return clean empty record instead of error messages
+        clean_record = {
+            "filename": pdf_path.name,
+            "title": "",
+            "abstract": "",
+            "method": "",
+            "objectives": "",
+            "categories": [],
+            "summary": "",
+        }
+        return clean_record, str(e)
