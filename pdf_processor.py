@@ -1,4 +1,5 @@
 import asyncio
+import io
 import json
 from datetime import datetime
 from pathlib import Path
@@ -6,22 +7,120 @@ from pathlib import Path
 import fitz  # PyMuPDF
 import pandas as pd
 
+# Additional imports for better extraction
+import pdfplumber
+import PyPDF2
+import pytesseract
+from pdfminer.high_level import extract_text as pdfminer_extract_text
+from PIL import Image
+
 import models
 
 
-async def extract_text_from_pdf(pdf_path):
-    """Extract text from PDF using PyMuPDF"""
+async def extract_text_from_pdf_robust(pdf_path):
+    """Robust PDF text extraction with multiple methods and OCR fallback"""
+
+    print(f"   🔍 Trying multiple extraction methods for {pdf_path.name}")
+
+    # Method 1: PyMuPDF (current method - fast and usually good)
     try:
         doc = fitz.open(pdf_path)
-        full_text = []
+        text_parts = []
         for page in doc:
             text = page.get_text()
             if text.strip():
-                full_text.append(text)
+                text_parts.append(text)
         doc.close()
-        return "\n".join(full_text)
+
+        full_text = "\n".join(text_parts)
+        if len(full_text.strip()) > 100:  # Good extraction
+            print(f"   ✅ PyMuPDF extraction successful: {len(full_text)} chars")
+            return full_text
+        else:
+            print(f"   ⚠️  PyMuPDF extracted minimal text: {len(full_text)} chars")
     except Exception as e:
-        raise Exception(f"Error extracting text from {pdf_path}: {e}")
+        print(f"   ❌ PyMuPDF failed: {e}")
+
+    # Method 2: pdfplumber (better for complex layouts)
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            text_parts = []
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text and text.strip():
+                    text_parts.append(text)
+
+        full_text = "\n".join(text_parts)
+        if len(full_text.strip()) > 100:
+            print(f"   ✅ pdfplumber extraction successful: {len(full_text)} chars")
+            return full_text
+        else:
+            print(f"   ⚠️  pdfplumber extracted minimal text: {len(full_text)} chars")
+    except Exception as e:
+        print(f"   ❌ pdfplumber failed: {e}")
+
+    # Method 3: PDFMiner (good for complex PDFs)
+    try:
+        full_text = pdfminer_extract_text(str(pdf_path))
+        if len(full_text.strip()) > 100:
+            print(f"   ✅ PDFMiner extraction successful: {len(full_text)} chars")
+            return full_text
+        else:
+            print(f"   ⚠️  PDFMiner extracted minimal text: {len(full_text)} chars")
+    except Exception as e:
+        print(f"   ❌ PDFMiner failed: {e}")
+
+    # Method 4: PyPDF2 (lightweight fallback)
+    try:
+        with open(pdf_path, "rb") as file:
+            reader = PyPDF2.PdfReader(file)
+            text_parts = []
+            for page in reader.pages:
+                text = page.extract_text()
+                if text and text.strip():
+                    text_parts.append(text)
+
+        full_text = "\n".join(text_parts)
+        if len(full_text.strip()) > 100:
+            print(f"   ✅ PyPDF2 extraction successful: {len(full_text)} chars")
+            return full_text
+        else:
+            print(f"   ⚠️  PyPDF2 extracted minimal text: {len(full_text)} chars")
+    except Exception as e:
+        print(f"   ❌ PyPDF2 failed: {e}")
+
+    # Method 5: OCR with Tesseract (for scanned PDFs)
+    try:
+        print(f"   🔍 Attempting OCR extraction (this may take longer)...")
+        doc = fitz.open(pdf_path)
+        text_parts = []
+
+        for page_num in range(min(5, len(doc))):  # Limit to first 5 pages for OCR
+            page = doc.load_page(page_num)
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))  # Higher resolution
+            img_data = pix.tobytes("png")
+            img = Image.open(io.BytesIO(img_data))
+
+            # OCR the image
+            ocr_text = pytesseract.image_to_string(img, lang="eng")
+            if ocr_text and ocr_text.strip():
+                text_parts.append(f"=== PAGE {page_num + 1} (OCR) ===\n{ocr_text}")
+
+        doc.close()
+        full_text = "\n".join(text_parts)
+
+        if len(full_text.strip()) > 100:
+            print(f"   ✅ OCR extraction successful: {len(full_text)} chars")
+            return full_text
+        else:
+            print(f"   ⚠️  OCR extracted minimal text: {len(full_text)} chars")
+
+    except Exception as e:
+        print(f"   ❌ OCR failed: {e}")
+
+    # If all methods fail
+    print(f"   ❌ All extraction methods failed for {pdf_path.name}")
+    raise Exception("All extraction methods failed")
 
 
 async def extract_paper_info(text, filename, max_retries=3):
@@ -66,7 +165,7 @@ async def extract_paper_info(text, filename, max_retries=3):
                     },
                     {
                         "role": "user",
-                        "content": f"Extract paper information from: {text[:15000]}",
+                        "content": f"Extract paper information from: {text}",  # Increased limit
                     },
                 ],
                 response_format={
@@ -78,8 +177,6 @@ async def extract_paper_info(text, filename, max_retries=3):
                         "strict": True,
                     },
                 },
-                max_tokens=3000,
-                temperature=0.1,
             )
 
             return response.choices[0].message.content
@@ -90,7 +187,7 @@ async def extract_paper_info(text, filename, max_retries=3):
                 raise Exception(
                     f"All {max_retries} attempts failed for {filename}: {e}"
                 )
-            await asyncio.sleep(2**attempt)  # Exponential backoff: 1s, 2s, 4s
+            await asyncio.sleep(2**attempt)
 
 
 async def save_to_excel(record, excel_path):
@@ -111,10 +208,10 @@ async def save_to_excel(record, excel_path):
 
 
 async def process_single_pdf(pdf_path):
-    """Process a single PDF and return the record with clean error handling"""
+    """Process a single PDF and return the record with robust extraction"""
     try:
-        # Extract text
-        text = await extract_text_from_pdf(pdf_path)
+        # Extract text with robust methods
+        text = await extract_text_from_pdf_robust(pdf_path)
         if not text.strip():
             raise Exception("No text extracted")
 
