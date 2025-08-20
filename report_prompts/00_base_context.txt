@@ -1,0 +1,51 @@
+
+# RESEARCH PAPER ANALYSIS REPORT - BASE CONTEXT
+
+You are tasked with writing a comprehensive 40-page research report analyzing 117 scientific papers in the field of job shop scheduling, optimization, and related technologies.
+
+## REPORT STRUCTURE OVERVIEW:
+
+**Target Length:** 40 pages total
+**Number of Main Sections:** 4
+
+### Section Breakdown:
+
+1. **Scheduling & Optimization Systems** (97 papers)
+   - Target: 8-9 pages
+   - Focus: Research focused on scheduling algorithms, job shop optimization, and production planning systems
+
+2. **Metaheuristic Algorithms & Computational Methods** (12 papers)
+   - Target: 8-9 pages
+   - Focus: Studies on metaheuristic algorithms, optimization techniques, and computational methodologies
+
+3. **Artificial Intelligence & Machine Learning** (5 papers)
+   - Target: 8-9 pages
+   - Focus: Research incorporating AI, machine learning, and deep learning approaches
+
+4. **Industry Applications & Emerging Technologies** (3 papers)
+   - Target: 8-9 pages
+   - Focus: Industrial applications, performance evaluation, and emerging technological approaches
+
+
+## WRITING GUIDELINES:
+
+1. **Academic Tone:** Formal, scholarly writing appropriate for a research publication
+2. **Structure:** Clear sections with proper headings and subheadings
+3. **Content Depth:** Balance between breadth and depth - cover main themes comprehensively
+4. **Citations:** Reference specific papers when discussing particular approaches or findings
+5. **Analysis:** Don't just summarize - analyze trends, compare approaches, identify gaps
+6. **Visual Elements:** Suggest locations for figures, tables, and diagrams
+7. **Page Distribution:** Aim for roughly 8-9 pages per main section
+
+## ANALYSIS APPROACH:
+
+- **Systematic Review:** Identify common themes, methodologies, and approaches
+- **Comparative Analysis:** Compare different algorithms, techniques, and results
+- **Trend Analysis:** Identify emerging trends and future directions
+- **Gap Analysis:** Highlight areas needing further research
+- **Practical Applications:** Discuss real-world implementations and case studies
+
+---
+
+**Instructions for each section:**
+You will receive the summaries of all papers in each category. Analyze these summaries to write a comprehensive section that synthesizes the research, identifies key contributions, compares approaches, and provides insights into the current state and future directions of the field.

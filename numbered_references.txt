@@ -1,0 +1,135 @@
+NUMBERED REFERENCES FOR CITATIONS
+==================================================
+
+[001] Survey of integrated flexible job shop scheduling problems
+[002] No-Wait Job Shop Scheduling Using a Population-Based Iterated Greedy Algorithm
+[003] Multiobjective evolutionary algorithm for manufacturing scheduling problems: state-of-the-art survey
+[004] An Effective Hybrid Imperialist Competitive Algorithm and Tabu Search for an Extended Flexible Job Shop Scheduling Problem
+[005] The Shifting Bottleneck Procedure for Job Shop Scheduling
+[006] Comparative Study of Heuristics Algorithms in Solving Flexible Job Shop Scheduling Problem with Condition Based Maintenance
+[007] Customer centric production planning and control in job shops: A simulation optimization approach
+[008] An improved Ant System algorithm for the Vehicle Routing Problem
+[009] A Knowledge-Based Ant Colony Optimization for Flexible Job Shop Scheduling Problems
+[010] A Review of Production Scheduling
+[011] Inverse model and adaptive neighborhood search based cooperative optimizer for energy-efficient distributed flexible job shop scheduling
+[012] A Discrete Grey Wolf Optimizer for Solving Flexible Job Shop Scheduling Problem with Lot-streaming
+[013] Evolutionary tabu search for flexible due-date satisfaction in fuzzy job shop scheduling
+[014] Flexible job shop scheduling with due window—a two-pheromone ant colony approach
+[015] Improved NSGA2 Algorithm to Solve Multi-Objective Flexible Job Shop Scheduling Problem
+[016] A Pareto-based two-stage evolutionary algorithm for flexible job shop scheduling problem with worker cooperation flexibility
+[017] Stochastic Neural Networks for Solving JobShop Scheduling: Part 1. Problem Representation
+[018] An effective hybrid optimization approach for multi-objective flexible job-shop scheduling problems
+[019] Solving job shop scheduling problems via deep reinforcement learning
+[020] A hybrid Differential Evolution—Tabu Search algorithm for the solution of Job-Shop Scheduling Problems
+[021] An Efficient Method for the Open-Shop Scheduling Problem Using Simulated Annealing
+[022] A Quantum Behaved Particle Swarm Optimization for Flexible Job Shop Scheduling
+[023] Mathematical modeling and a hybridized bacterial foraging optimization algorithm for the flexible job-shop scheduling problem with sequencing flexibility
+[024] A Branch and Bound Algorithm for the Total Weighted Tardiness Problem
+[025] A State Transition Diagram and an Artificial Physarum polycephalum Colony Algorithm for the Flexible Job Shop Scheduling Problem with Transportation Constraints
+[026] A Discrete Firefly Algorithm for the Multi-Objective Hybrid Flowshop Scheduling Problems
+[027] A graph neural networks-based deep Q-learning approach for job shop scheduling problems in traffic management
+[028] An efficient memetic algorithm for distributed flexible job shop scheduling problem with transfers
+[029] Genetic Programming with Diverse Partner Selection for Dynamic Flexible Job Shop Scheduling
+[030] An improved method of job shop scheduling using machine learning and mathematical optimization
+[031] Hybrid whale optimization algorithm enhanced with Lévy flight and differential evolution for job shop scheduling problems
+[032] Policy Network for Solving Flexible Job Shop Scheduling Problem with Setup Times and Rescoure Constraints
+[033] AN INTEGER LINEAR-PROGRAMMING MODEL FOR MACHINE SCHEDULING
+[034] Multi-Objective Flexible Job Shop Scheduling Problem Considering Machine Switching Off-On Operation
+[035] Research on flexible job-shop scheduling problem in green sustainable manufacturing based on learning effect
+[036] Two-objective Robust Job-Shop Scheduling with Two Problem-Specific Neighborhood Structures
+[037] Real-Time Scheduling for Dynamic Partial-No-Wait Multiobjective Flexible Job Shop by Deep Reinforcement Learning
+[038] A Parallel Learning Approach for the Flexible Job Shop Scheduling Problem
+[039] Beam-ACO—hybridizing ant colony optimization with beam search: an application to open shop scheduling
+[040] A hybrid estimation of distribution algorithm for distributed flexible job shop scheduling with crane transportations site
+[041] On the Application of Insertion Techniques for Job Shop Problems with Setup Times
+[042] A deep reinforcement learning model for dynamic job-shop scheduling problem with uncertain processing time
+[043] Flexible Job Shop Scheduling Problem Using an Improved Ant Colony Optimization
+[044] A Review of The Application of Genetic Algorithms for Solving Flexible Job Shop Scheduling Problems
+[045] Decentralization Cost in Two-Machine Job-shop Scheduling with Minimum Flow-time Objective
+[046] Ant colony optimization combined with taboo search for the job shop scheduling problem
+[047] A Grasshopper Optimization Algorithm for the Flexible Job Shop Scheduling Problem
+[048] An Improved Genetic Algorithm with Local Search for Dynamic Job Shop Scheduling Problem
+[049] An Adaptive Job Shop Scheduling Mechanism for Disturbances by Running Reinforcement Learning in Digital Twin Environment
+[050] Simultaneous Scheduling Strategy: A Novel Method for Flexible Job Shop Scheduling Problem
+[051] A Hybrid Pareto-Based Tabu Search for the Distributed Flexible Job Shop Scheduling Problem With E/T Criteria
+[052] An improved shifting bottleneck procedure for the job shop scheduling problem
+[053] A meta-heuristic to solve the just-in-time job-shop scheduling problem
+[054] A "Branch-and-Bound" Algorithm for the Exact Solution of the Three-machine Scheduling Problem
+[055] A hybrid evolutionary immune algorithm for fuzzy flexible job shop scheduling problem with variable processing speeds
+[056] Survey on Genetic Programming and Machine Learning Techniques for Heuristic Design in Job Shop Scheduling
+[057] Dynamic job-shop scheduling in smart manufacturing using deep reinforcement learning
+[058] On the Job-Shop Scheduling Problem
+[059] A novel MILP model for job shop scheduling problem with mobile robots
+[060] The flexible job shop scheduling problem: A review
+[061] PAC Identification
+[062] Job shop scheduling model for a sustainable manufacturing
+[063] A simple two-agent system for multi-objective flexible job-shop scheduling
+[064] Multi-objective enhanced memetic algorithm for green job shop scheduling with uncertain times
+[065] Evolutionary Learning Based Simulation Optimization for Stochastic Job Shop Scheduling Problems
+[066] Guided Local Search with Shifting Bottleneck for Job Shop Scheduling
+[067] Testing the performance of teaching–learning based optimization (TLBO) algorithm on combinatorial problems: Flow shop and job shop scheduling cases
+[068] Multi-objective scheduling of dynamic job shop using variable neighborhood search
+[069] A Deep Reinforcement Learning Approach to Flexible Job Shop Scheduling
+[070] Multi-objective optimization for stochastic failure-prone job shop scheduling problem via hybrid of NSGA-II and simulation method
+[071] An Ant Colony Optimization Algorithm for Shop Scheduling Problems
+[072] Dynamic opposite learning enhanced dragonfly algorithm for solving large-scale flexible job shop scheduling problem
+[073] Solving permutation problems with Differential Evolution: An Application to the Jobshop Scheduling Problem
+[074] Flexible job shop scheduling under condition-based maintenance: Improved version of imperialist competitive algorithm
+[075] Flexible Job Shop Scheduling Problems with Arbitrary Precedence Graphs
+[076] A dynamic programming-based heuristic algorithm for a flexible job shop scheduling problem of a matrix system in automotive industry
+[077] Scheduling the General Job-Shop
+[078] Flexible job shop scheduling problem under Industry 5.0: A survey on human reintegration, environmental consideration and resilience improvement
+[079] Solving the energy-efficient job shop scheduling problem: A multi-objective genetic algorithm with enhanced local search for minimizing the total weighted tardiness and total energy consumption
+[080] A review on evolution of production scheduling with neural networks
+[081] A tutorial survey of job-shop scheduling problems using genetic algorithms, part II: hybrid genetic search strategies
+[082] Artificial neural networks for job shop simulation
+[083] The Complexity of Flowshop and Jobshop Scheduling
+[084] Hybrid Brain Storm Optimization algorithm and Late Acceptance Hill Climbing to solve the Flexible Job-Shop Scheduling Problem
+[085] Flexible job shop scheduling with parallel machines using Genetic Algorithm and Grouping Genetic Algorithm
+[086] An Effective Multi-Objective Artificial Bee Colony Algorithm for Energy Efficient Distributed Job Shop Scheduling
+[087] Hybrid whale optimization algorithm enhanced with Lévy flight and differential evolution for job shop scheduling problems
+[088] A case study of variational quantum algorithms for a job shop scheduling problem
+[089] Improved NSGA2 Algorithm to Solve Multi-Objective Flexible Job Shop Scheduling Problem
+[090] A Decomposition Method for Makespan Minimization in Job-Shop Scheduling Problem Using Ising Machine
+[091] Network modeling and evolutionary optimization for scheduling in manufacturing
+[092] Utilizing Multi-Agent Deep Reinforcement Learning For Flexible Job Shop Scheduling Under Sustainable Viewpoints
+[093] Improved Genetic Algorithm Approach Based on New Virtual Crossover Operators for Dynamic Job Shop Scheduling
+[094] Untitled Paper
+[095] A Study on Performance Evaluation of Different Parameter Settings of Particle Swarm Optimization in Job Shop Scheduling Problem
+[096] An Ant Colony Algorithm (ACA) for solving the new integrated model of job shop scheduling and conflict-free routing of AGVs
+[097] Mathematical models and benchmarking for the fuzzy job shop scheduling problem
+[098] b_jims_0000034106_86434_46 -- d89a80410f5c8bf92c3c34449f2acef1 -- Anna’s Archive.pdf
+[099] A hybrid differential evolution and estimation of distribution algorithm based on neighbourhood search for job shop scheduling problems
+[100] Solving flexible job shop scheduling problems via deep reinforcement learning
+[101] A hybrid genetic tabu search algorithm for solving job shop scheduling problems: a case study
+[102] Design Principles for Industrie 4.0 Scenarios
+[103] Research on Job Shop Scheduling Algorithm of Intelligent Manufacturing Based on Machine Learning
+[104] Multi-objective optimisation in flexible assembly job shop scheduling using a distributed ant colony system
+[105] A hybrid shifting bottleneck procedure algorithm for the parallel-machine job-shop scheduling problem
+[106] Digital Twin Enhanced Dynamic Job-Shop Scheduling
+[107] On Scheduling with Ready Times and Due Dates to Minimize Maximum Lateness
+[108] Ageing workforce effects in Dual-Resource Constrained job-shop scheduling
+[109] On the Job-Shop Scheduling Problem
+[110] Solving a new robust reverse job shop scheduling problem by meta-heuristic algorithms
+[111] A research survey: review of AI solution strategies of job shop scheduling problem
+[112] Cluster analysis and neural network-based metamodeling of priority rules for dynamic sequencing
+[113] An efficient hybrid optimization method for Fuzzy Flexible Job-Shop Scheduling Problem: Steady-state performance and analysis
+[114] Multiobjective Optimization for Complex Flexible Job-Shop Scheduling Problems
+[115] A survey of job shop scheduling problem: The types and models
+[116] A Variable Group Parallel Flexible Job Shop Scheduling in a SMEs Manufacturing Platform
+[117] An improved branching scheme for the branch and bound procedure of scheduling n jobs on m parallel machines to minimize total weighted flowtime
+[118] An Improved Genetic Algorithm for Solving the Multi-AGV Flexible Job Shop Scheduling Problem
+[119] A hybrid estimation of distribution algorithm for distributed flexible job shop scheduling with crane transportations site
+[120] Hybrid Sorting Immune Simulated Annealing Algorithm For Flexible Job Shop Scheduling
+[121] DeepMAG: Deep reinforcement learning with multi-agent graphs for flexible job shop scheduling
+[122] b_jims_0000034116_50789_df -- 7ae6c46afefe7ee008d092050882f6fb -- Anna’s Archive.pdf
+[123] Manifold learning based rescheduling decision mechanism for recessive disturbances in RFID-driven job shops
+[124] A shuffled cellular evolutionary grey wolf optimizer for flexible job shop scheduling problem with tree-structure job precedence constraints
+[125] An Effective Ant Colony Optimization Algorithm for Multi-Objective Job-Shop Scheduling with Equal-Size Lot-Splitting
+[126] An efficient two-stage genetic algorithm for a flexible job-shop scheduling problem with sequence dependent attached/detached setup, machine release date and lag-time
+[127] An effective two-stage algorithm based on convolutional neural network for the bi-objective flexible job shop scheduling problem with machine breakdown
+[128] A Novel Metaheuristic Hybrid Parthenogenetic Algorithm for Job Shop Scheduling Problems: Applying an Optimization Model
+[129] Multiple Priority Dispatching Rules for the Job Shop Scheduling Problem
+[130] A modified shifting bottleneck procedure for job-shop scheduling
+[131] A Pareto based discrete Jaya algorithm for multi-objective flexible job shop scheduling problem
+[132] A simheuristic approach for the flexible job shop scheduling problem with stochastic processing times

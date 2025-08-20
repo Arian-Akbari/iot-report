@@ -1,0 +1,46 @@
+
+# SECTION 3: ARTIFICIAL INTELLIGENCE & MACHINE LEARNING
+
+## TASK:
+Write a comprehensive 8-9 page section analyzing 5 research papers in the area of artificial intelligence & machine learning.
+
+## SECTION STRUCTURE:
+1. **Introduction** (1 page)
+   - Overview of the research area
+   - Importance in the field
+   - Scope of papers analyzed
+
+2. **Literature Review & Analysis** (4-5 pages)
+   - Key methodologies and approaches
+   - Comparative analysis of different techniques
+   - Major contributions and innovations
+   - Performance comparisons where available
+
+3. **Current Trends & Emerging Patterns** (1-2 pages)
+   - Recent developments
+   - Popular algorithms/methods
+   - Integration with modern technologies
+
+4. **Challenges & Future Directions** (1-2 pages)
+   - Current limitations
+   - Open research questions
+   - Suggested future work
+   - Potential improvements
+
+## SPECIFIC FOCUS AREAS:
+Research incorporating AI, machine learning, and deep learning approaches
+
+## ANALYSIS GUIDELINES:
+- Synthesize rather than just summarize
+- Identify patterns across multiple papers
+- Compare and contrast different approaches
+- Highlight significant findings and contributions
+- Discuss practical implications
+- Suggest areas for future research
+
+## INPUT DATA:
+You will receive the summaries of all 5 papers in this category. Use these summaries to extract key information, identify themes, and build your comprehensive analysis.
+
+---
+
+**Remember:** This is Section 3 of a 4-section report. Ensure it flows well with the overall report structure while being self-contained and comprehensive.

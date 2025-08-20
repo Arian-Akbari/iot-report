@@ -1,0 +1,39 @@
+
+# FINAL REPORT ASSEMBLY INSTRUCTIONS
+
+## USAGE WORKFLOW:
+
+1. **Start with Base Context:** Read the base context prompt to understand the overall report structure and guidelines.
+
+2. **Process Each Section:** For each of the 4 main sections:
+   - Read the section-specific prompt
+   - Load the corresponding summaries file
+   - Feed both the prompt and summaries to your AI assistant
+   - Generate the 8-9 page section
+
+3. **Add Introduction & Conclusion:**
+   - Write a 2-3 page introduction covering the scope, methodology, and overview
+   - Write a 2-3 page conclusion summarizing key findings and future directions
+
+4. **Final Assembly:**
+   - Combine all sections in order
+   - Ensure consistent formatting and flow
+   - Add table of contents
+   - Review for coherence and completeness
+
+## FILES STRUCTURE:
+- `00_base_context.txt` - Overall context and guidelines
+- `1_Scheduling_prompt.txt` - Prompt for Scheduling & Optimization section
+- `2_Algorithms_prompt.txt` - Prompt for Algorithms & Methods section  
+- `3_AI_prompt.txt` - Prompt for AI & Machine Learning section
+- `4_Industry_prompt.txt` - Prompt for Industry Applications section
+- `categorized_papers/` - Directory with all categorized papers and summaries
+
+## ESTIMATED OUTPUT:
+- Introduction: 2-3 pages
+- Section 1: 8-9 pages
+- Section 2: 8-9 pages  
+- Section 3: 8-9 pages
+- Section 4: 8-9 pages
+- Conclusion: 2-3 pages
+- **Total: ~40 pages**
